@@ -1,0 +1,133 @@
+[
+  {
+    "id": 1,
+    "nombre": "horizontales",
+    "tipo_contenido": "video",
+    "rotacion": 0,
+    "repeticion": "bucle",
+    "contenidos": [
+      "copy_52CA17E9-305A-4322-B5AD-3D61AFFBB02F_1.mov",
+      "copy_8275C8C8-42B6-4B67-80F8-2976EDFB1DEB.mov",
+      "copy_69A9C264-7787-4094-A08C-84F886A52710.mov",
+      "copy_D3DD536D-9949-4BFA-A698-BC8F075287DB.mov",
+      "h1.mp4"
+    ],
+    "proceso_ffmpeg": {
+      "pid": 401,
+      "pgid": 401,
+      "inicio": "2025-09-18T09:32:31.684058",
+      "comando": "ffmpeg -re -stream_loop -1 -f concat -safe 0 -i /home/Signally/multimedia/playlists/playlist_1.txt -c:v libx264 -preset veryfast -tune zerolatency -b:v 5000k -maxrate 5000k -bufsize 10000k -g 60 -keyint_min 60 -sc_threshold 0 -pix_fmt yuv420p -c:a aac -b:a 192k -ar 44100 -ac 2 -f flv rtmp://172.16.1.126:1935/live/horizontales"
+    },
+    "en_transmision": true,
+    "fecha_creacion": "2025-07-07T01:26:44.741386",
+    "fecha_actualizacion": "2025-08-21T09:07:25.295854"
+  },
+  {
+    "id": 2,
+    "nombre": "verticales",
+    "tipo_contenido": "video",
+    "rotacion": 270,
+    "repeticion": "bucle",
+    "contenidos": [
+      "lv_0_20250319155825.mp4",
+      "lv_0_20250411172440.mp4",
+      "lv_0_20241215141858.mp4",
+      "lv_0_20241203145331.mp4",
+      "lv_0_20241112092107.mp4",
+      "lv_0_20241106171221.mp4",
+      "lv_0_20241025110542.mp4",
+      "lv_0_20241119114001.mp4",
+      "lv_0_20241015155544.mp4",
+      "lv_0_20241128123711.mp4",
+      "lv_0_20241031124042.mp4",
+      "copy_296DBAEF-709D-4347-909A-7F7E9ADFA9D3.mov",
+      "lv_0_20240526165121.mp4",
+      "copy_A1370964-A000-4661-9F72-7D1FE699377B.mov",
+      "lv_0_20240919172708.mp4",
+      "lv_0_20240924144137.mp4",
+      "copy_796B1750-408B-47A1-8B2F-B963799BD961.mov",
+      "copy_F03E1807-E29A-481F-B438-F52C3CE51C98.mov",
+      "lv_0_20240303113458.mp4",
+      "IMG_7557.mp4",
+      "copy_699D4A5A-9EE9-48DC-99D2-F536EBEFE59A.mov",
+      "v28.mp4",
+      "v25.mp4",
+      "v26.mp4",
+      "v29.mp4",
+      "v17.mp4",
+      "v27.mp4",
+      "v23.mp4",
+      "v18.mp4",
+      "v24.mp4",
+      "v20.mp4",
+      "v19.mp4",
+      "v21.mp4",
+      "v22.mp4",
+      "v16.mp4",
+      "v13.mp4",
+      "v15.mp4",
+      "v10.mp4",
+      "v12.mp4",
+      "v14.mp4",
+      "v11.mp4",
+      "v9.mp4",
+      "v8.mp4",
+      "v1.mp4",
+      "v4.mp4",
+      "v7.mp4",
+      "v2.mp4",
+      "v3.mp4",
+      "v5.mp4",
+      "v6.mp4"
+    ],
+    "proceso_ffmpeg": {
+      "pid": 635,
+      "pgid": 635,
+      "inicio": "2025-09-18T09:34:47.252414",
+      "comando": "ffmpeg -re -stream_loop -1 -f concat -safe 0 -i /home/Signally/multimedia/playlists/playlist_2.txt -vf transpose=2 -c:v libx264 -preset veryfast -tune zerolatency -b:v 5000k -maxrate 5000k -bufsize 10000k -g 60 -keyint_min 60 -sc_threshold 0 -pix_fmt yuv420p -c:a aac -b:a 192k -ar 44100 -ac 2 -f flv rtmp://172.16.1.126:1935/live/verticales"
+    },
+    "en_transmision": true,
+    "fecha_creacion": "2025-07-07T01:31:34.348877",
+    "fecha_actualizacion": "2025-07-26T16:46:53.928181"
+  },
+  {
+    "id": 3,
+    "nombre": "vertical-1",
+    "tipo_contenido": "video",
+    "rotacion": 270,
+    "repeticion": "bucle",
+    "contenidos": [
+      "lv_0_20250727103135.mp4"
+    ],
+    "proceso_ffmpeg": {
+      "pid": 447,
+      "pgid": 447,
+      "inicio": "2025-09-18T09:32:42.432734",
+      "comando": "ffmpeg -re -stream_loop -1 -f concat -safe 0 -i /home/Signally/multimedia/playlists/playlist_3.txt -vf transpose=2 -c:v libx264 -preset veryfast -tune zerolatency -b:v 5000k -maxrate 5000k -bufsize 10000k -g 60 -keyint_min 60 -sc_threshold 0 -pix_fmt yuv420p -c:a aac -b:a 192k -ar 44100 -ac 2 -f flv rtmp://172.16.1.126:1935/live/vertical-1"
+    },
+    "en_transmision": true,
+    "fecha_creacion": "2025-07-08T08:59:11.465216",
+    "fecha_actualizacion": "2025-07-28T11:07:35.724273"
+  },
+  {
+    "id": 4,
+    "nombre": "horizontal 2 ",
+    "tipo_contenido": "video",
+    "rotacion": 0,
+    "repeticion": "bucle",
+    "contenidos": [
+      "copy_52CA17E9-305A-4322-B5AD-3D61AFFBB02F_1.mov",
+      "copy_8275C8C8-42B6-4B67-80F8-2976EDFB1DEB.mov",
+      "copy_69A9C264-7787-4094-A08C-84F886A52710.mov"
+    ],
+    "proceso_ffmpeg": {
+      "pid": 589,
+      "pgid": 589,
+      "inicio": "2025-09-18T09:34:42.143044",
+      "comando": "ffmpeg -re -stream_loop -1 -f concat -safe 0 -i /home/Signally/multimedia/playlists/playlist_4.txt -c:v libx264 -preset veryfast -tune zerolatency -b:v 5000k -maxrate 5000k -bufsize 10000k -g 60 -keyint_min 60 -sc_threshold 0 -pix_fmt yuv420p -c:a aac -b:a 192k -ar 44100 -ac 2 -f flv rtmp://172.16.1.126:1935/live/horizontal_2_"
+    },
+    "en_transmision": true,
+    "fecha_creacion": "2025-08-23T12:19:28.765578",
+    "fecha_actualizacion": "2025-08-23T12:19:28.765578"
+  }
+]

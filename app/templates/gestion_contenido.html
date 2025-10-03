@@ -1,0 +1,381 @@
+{% extends "base.html" %}
+
+{% block title %}Gestión de Contenido - {{ super() }}{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1>Gestión de Contenido Multimedia</h1>
+            <p class="lead">Administra y organiza tus archivos multimedia</p>
+        </div>
+    </div>
+
+    <!-- Sección de Subida de Archivos -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5 class="mb-0">Subir Nuevo Contenido</h5>
+        </div>
+        <div class="card-body">
+            <form action="{{ url_for('main.gestion_contenido') }}" method="POST" enctype="multipart/form-data" id="uploadForm">
+                <div class="mb-3">
+                    <label for="mediaFiles" class="form-label">Seleccionar archivos (múltiples)</label>
+                    <input class="form-control" type="file" id="mediaFiles" name="mediaFiles" accept="image/*,video/*,audio/*" multiple required>
+                    <div class="form-text">Puedes seleccionar varios archivos manteniendo presionada la tecla Ctrl (Windows/Linux) o Cmd (Mac).</div>
+                </div>
+                <button type="submit" class="btn btn-primary" id="uploadButton">
+                    <i class="fas fa-upload me-2"></i>Subir Archivos
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Lista de Archivos Subidos -->
+    <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">Contenido Disponible</h5>
+            <div class="d-flex align-items-center">
+                <form method="POST" action="{{ url_for('main.eliminar_archivo') }}" id="deleteForm" class="d-inline">
+                    <button type="button" class="btn btn-outline-secondary me-2" id="selectAllBtn">
+                        <i class="fas fa-check-square me-1"></i> Seleccionar todo
+                    </button>
+                    <button type="submit" class="btn btn-danger" id="deleteSelectedBtn" disabled onclick="return confirm('¿Estás seguro de que deseas eliminar los archivos seleccionados?')">
+                        <i class="fas fa-trash-alt me-1"></i> Eliminar seleccionados
+                    </button>
+                </form>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <colgroup>
+                        <col style="width: 40px;">
+                        <col style="width: 60px;">
+                        <col>
+                        <col style="width: 100px;">
+                        <col style="width: 120px;">
+                        <col style="width: 200px;">
+                        <col style="width: 140px;">
+                    </colgroup>
+                    <thead>
+                        <tr>
+                            <th><input type="checkbox" id="selectAllCheckbox" class="form-check-input"></th>
+                            <th>Miniatura</th>
+                            <th>Nombre</th>
+                            <th>Tipo</th>
+                            <th>Tamaño</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="mediaList">
+                        {% if archivos %}
+                            {% for archivo in archivos %}
+                                <tr id="file-{{ archivo.name }}">
+                                    <td>
+                                        <input type="checkbox" name="archivos" value="{{ archivo.name }}" class="form-check-input file-checkbox">
+                                    </td>
+                                    <td>
+                                        {% if archivo.is_image %}
+                                            <i class="fas fa-image fa-2x text-primary"></i>
+                                        {% elif archivo.is_video %}
+                                            <i class="fas fa-film fa-2x text-danger"></i>
+                                        {% elif archivo.is_audio %}
+                                            <i class="fas fa-music fa-2x text-success"></i>
+                                        {% else %}
+                                            <i class="fas fa-file fa-2x text-secondary"></i>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ archivo.name }}</td>
+                                    <td>{{ archivo.type|upper }}</td>
+                                    <td id="size-{{ archivo.name }}">{{ "%.2f MB"|format(archivo.size / (1024 * 1024)) }}</td>
+                                    <td id="status-container-{{ archivo.name }}">
+                                        {% if archivo.is_video %}
+                                            {% if archivo.status == 'completed' %}
+                                                <span class="badge bg-success">Procesado</span>
+                                            {% elif archivo.status == 'processing' or archivo.status == 'pending' or archivo.status == 'queued' %}
+                                                <div class="progress" style="height: 20px; font-size: 0.8rem;">
+                                                    <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: {{ archivo.progress|default(0) }}%" aria-valuenow="{{ archivo.progress|default(0) }}" aria-valuemin="0" aria-valuemax="100">
+                                                        {{ archivo.progress|default(0) }}%
+                                                    </div>
+                                                </div>
+                                                <small class="text-muted">{{ 'Procesando...' if archivo.status == 'processing' else 'En cola...' }}</small>
+                                            {% else %}
+                                                <span class="badge bg-danger">Falló</span>
+                                            {% endif %}
+                                        {% else %}
+                                            <span class="badge bg-secondary">No aplicable</span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="table-actions">
+                                        <div class="btn-group">
+                                            <a href="{{ url_for('main.servir_archivo', filename=archivo.name) }}" 
+                                               class="btn-actions" 
+                                               target="_blank"
+                                               title="Ver">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                            <form method="POST" action="{{ url_for('main.eliminar_archivo') }}" class="d-inline" onsubmit="return confirm('¿Estás seguro de que deseas eliminar este archivo?')">
+                                                <input type="hidden" name="archivos[]" value="{{ archivo.name }}">
+                                                <button type="submit" class="btn-actions btn-delete" title="Eliminar">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr>
+                                <td colspan="7" class="text-center">No hay contenido disponible</td>
+                            </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.table-actions {
+    white-space: nowrap;
+    width: 1%;
+    padding: 0.5rem !important;
+}
+.btn-actions {
+    width: 32px;
+    height: 32px;
+    padding: 0.375rem;
+    border: none;
+    background: none;
+    color: #6c757d;
+    border-radius: 4px;
+    transition: all 0.2s ease-in-out;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 2px;
+}
+.btn-actions:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+    color: #0d6efd;
+}
+.btn-actions.btn-delete:hover {
+    color: #dc3545;
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+const ELIMINAR_ARCHIVO_URL = "{{ url_for('main.eliminar_archivo') }}";
+
+document.addEventListener('DOMContentLoaded', function() {
+    const uploadForm = document.getElementById('uploadForm');
+    const mediaFilesInput = document.getElementById('mediaFiles');
+    const uploadButton = document.getElementById('uploadButton');
+    const mediaList = document.getElementById('mediaList');
+    const pollingIntervals = new Map();
+
+    uploadForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const files = mediaFilesInput.files;
+        if (files.length === 0) return;
+
+        uploadButton.disabled = true;
+        uploadButton.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Subiendo...';
+
+        const formData = new FormData();
+        for (const file of files) {
+            formData.append('mediaFiles', file);
+        }
+
+        fetch("{{ url_for('main.gestion_contenido') }}", {
+            method: 'POST',
+            headers: {'X-Requested-With': 'XMLHttpRequest'},
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                mediaFilesInput.value = ''; 
+                data.files.forEach(addFileToTable);
+            } else {
+                alert('Error al subir archivos: ' + data.error);
+            }
+        })
+        .catch(error => console.error('Error en la subida:', error))
+        .finally(() => {
+            uploadButton.disabled = false;
+            uploadButton.innerHTML = '<i class="fas fa-upload me-2"></i>Subir Archivos';
+        });
+    });
+
+    function getProgressBarHtml(progress, text) {
+        const p = progress || 0;
+        const t = text || (p > 0 ? 'Procesando...' : 'En cola...');
+        return `
+            <div class="progress" style="height: 20px; font-size: 0.8rem;">
+                <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: ${p}%" aria-valuenow="${p}" aria-valuemin="0" aria-valuemax="100">
+                    ${p}%
+                </div>
+            </div>
+            <small class="text-muted">${t}</small>
+        `;
+    }
+
+    function addFileToTable(file) {
+        const sizeInMB = (file.size / (1024 * 1024)).toFixed(2);
+        let statusHtml = '';
+
+        if (file.is_video) {
+            statusHtml = getProgressBarHtml(0);
+            startPolling(file.filename);
+        } else {
+            statusHtml = '<span class="badge bg-secondary">No aplicable</span>';
+        }
+
+        const newRow = `
+            <tr id="file-${file.filename}">
+                <td><input type="checkbox" name="archivos" value="${file.filename}" class="form-check-input file-checkbox"></td>
+                <td><i class="fas ${file.is_video ? 'fa-film text-danger' : 'fa-image text-primary'} fa-2x"></i></td>
+                <td>${file.filename}</td>
+                <td>${file.type.toUpperCase()}</td>
+                <td id="size-${file.filename}">${sizeInMB} MB</td>
+                <td id="status-container-${file.filename}">${statusHtml}</td>
+                <td class="table-actions">
+                    <div class="btn-group">
+                        <a href="/uploads/${file.filename}" class="btn-actions" target="_blank" title="Ver"><i class="fas fa-eye"></i></a>
+                        <form method="POST" action="${ELIMINAR_ARCHIVO_URL}" class="d-inline" onsubmit="return confirm('¿Estás seguro?')">
+                            <input type="hidden" name="archivos[]" value="${file.filename}">
+                            <button type="submit" class="btn-actions btn-delete" title="Eliminar"><i class="fas fa-trash"></i></button>
+                        </form>
+                    </div>
+                </td>
+            </tr>
+        `;
+        mediaList.insertAdjacentHTML('afterbegin', newRow);
+    }
+
+    function startPolling(filename) {
+        if (pollingIntervals.has(filename)) return; // Evitar múltiples intervalos para el mismo archivo
+        const intervalId = setInterval(() => {
+            fetch(`/api/transcoding/status/${filename}`)
+                .then(response => {
+                    if (!response.ok) throw new Error('Network response was not ok');
+                    return response.json();
+                })
+                .then(data => {
+                    updateStatus(filename, data);
+                })
+                .catch(error => {
+                    console.error(`Error sondeando ${filename}:`, error);
+                    stopPolling(filename);
+                });
+        }, 2500); // Reducido a 2.5 segundos para una actualización más fluida
+        pollingIntervals.set(filename, intervalId);
+    }
+
+    function stopPolling(filename) {
+        if (pollingIntervals.has(filename)) {
+            clearInterval(pollingIntervals.get(filename));
+            pollingIntervals.delete(filename);
+        }
+    }
+
+    function updateStatus(filename, data) {
+        const statusContainer = document.getElementById(`status-container-${filename}`);
+        if (!statusContainer) return;
+
+        const progress = data.progress || 0;
+
+        if (data.status === 'processing') {
+            statusContainer.innerHTML = getProgressBarHtml(progress, 'Procesando...');
+        } else if (data.status === 'queued' || data.status === 'pending') {
+            statusContainer.innerHTML = getProgressBarHtml(0, 'En cola...');
+        } else if (data.status === 'completed') {
+            statusContainer.innerHTML = '<span class="badge bg-success">Procesado</span>';
+            stopPolling(filename);
+        } else if (data.status === 'failed') {
+            const errorMessage = data.error || 'Error desconocido';
+            statusContainer.innerHTML = `<span class="badge bg-danger" title="${errorMessage}">Falló</span>`;
+            stopPolling(filename);
+        }
+    }
+    
+    document.querySelectorAll('#mediaList tr[id^="file-"]').forEach(row => {
+        const statusContainer = row.querySelector('[id^="status-container-"]');
+        if (statusContainer && statusContainer.querySelector('.progress')) {
+            const filename = row.id.replace('file-', '');
+            startPolling(filename);
+        }
+    });
+
+    // --- Lógica existente para selección y eliminación ---
+    const selectAllCheckbox = document.getElementById('selectAllCheckbox');
+    const selectAllBtn = document.getElementById('selectAllBtn');
+    const deleteSelectedBtn = document.getElementById('deleteSelectedBtn');
+    const deleteForm = document.getElementById('deleteForm');
+    
+    function updateButtonsState() {
+        const checkedBoxes = document.querySelectorAll('.file-checkbox:checked');
+        deleteSelectedBtn.disabled = checkedBoxes.length === 0;
+        if (selectAllCheckbox) {
+            const fileCheckboxes = document.querySelectorAll('.file-checkbox');
+            selectAllCheckbox.checked = fileCheckboxes.length > 0 && checkedBoxes.length === fileCheckboxes.length;
+        }
+    }
+    
+    if (selectAllCheckbox) {
+        selectAllCheckbox.addEventListener('change', function() {
+            document.querySelectorAll('.file-checkbox').forEach(checkbox => {
+                checkbox.checked = this.checked;
+            });
+            updateButtonsState();
+        });
+    }
+    
+    if (selectAllBtn) {
+        selectAllBtn.addEventListener('click', function() {
+            const allChecked = document.querySelectorAll('.file-checkbox').length === document.querySelectorAll('.file-checkbox:checked').length;
+            document.querySelectorAll('.file-checkbox').forEach(checkbox => {
+                checkbox.checked = !allChecked;
+            });
+            updateButtonsState();
+        });
+    }
+    
+    mediaList.addEventListener('change', function(e) {
+        if (e.target.classList.contains('file-checkbox')) {
+            updateButtonsState();
+        }
+    });
+    
+    if (deleteForm) {
+        deleteForm.addEventListener('submit', function(e) {
+            const selectedCheckboxes = document.querySelectorAll('.file-checkbox:checked');
+            if (selectedCheckboxes.length === 0) {
+                e.preventDefault();
+                alert('Por favor, selecciona al menos un archivo para eliminar.');
+                return;
+            }
+            // Limpiar inputs previos
+            deleteForm.querySelectorAll('input[name="archivos[]"]').forEach(i => i.remove());
+            // Añadir nuevos
+            selectedCheckboxes.forEach(checkbox => {
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = 'archivos[]';
+                input.value = checkbox.value;
+                deleteForm.appendChild(input);
+            });
+        });
+    }
+
+    updateButtonsState();
+});
+</script>
+{% endblock %}
